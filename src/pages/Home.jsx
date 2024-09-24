@@ -6,6 +6,8 @@ import AddEditNotes from './AddEditNotes'
 import Modal from 'react-modal'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../utils/axiosInstance'
+import Toast from '../components/Toast'
+import EmptyCard from '../components/EmptyCard'
 
 const Home = () => {
 
@@ -15,9 +17,35 @@ const Home = () => {
         data: null,
     });
 
+    const [showToaster, setShowToaster] = useState ({
+        isShown: false,
+        message: "",
+        type: "add",
+    });
+
     const [allNotes, setAllNotes] = useState([]);
     const [userInfo, setUserInfo] = useState(null);
     const navigate = useNavigate();
+    const [isSearch, setIsSearch] = useState(false);
+
+    const handleEdit = (noteDetails) => {
+        setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit"});
+    };
+
+    const showToastMessage = (message, type) => {
+        setShowToaster({
+            isShown: true,
+            message,
+            type
+        });
+    };
+
+    const handleCloseToast = () => {
+        setShowToaster({
+            isShown: false,
+            message: "",
+        });
+    };
 
     const getUserInfo = async () => {
         try {
@@ -45,6 +73,47 @@ const Home = () => {
         }
     };
 
+    const deleteNote = async (data) => {
+        const noteId = data._id
+
+        try {
+            const response = await axiosInstance.delete("/delete/" + noteId);
+
+            if (response.data && !response.data.error) {
+                showToastMessage("Note Deleted Successfully", 'delete');
+                getAllNotes();
+            }
+        } catch (error) {
+            if (
+                error.response &&
+                error.response.data &&
+                error.response.data.message
+            ) {
+                console.log("An unexpected error occurred. Please try again.");
+            }
+        }
+    };
+
+    const onSearchNote = async (query) => {
+        try {
+            const  response = await axiosInstance.get("/search", {
+                params: { query },
+            });
+
+            if (response.data && response.data.notes) {
+                setIsSearch(true);
+                setAllNotes(response.data.notes);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
+    const handleClearSearch = () => {
+        setIsSearch(false);
+        getAllNotes();
+    };
+
     useEffect(() => {
         getAllNotes();
         getUserInfo();
@@ -53,10 +122,15 @@ const Home = () => {
 
   return (
     <>
-        <Navbar userInfo={userInfo} />
+        <Navbar 
+            userInfo={userInfo}
+            onSearchNote={onSearchNote}
+            handleClearSearch={handleClearSearch}
+        />
 
         <div className='container mx-auto'>
-            <div className='grid grid-cols-3 gap-4 mt-8'>
+            {allNotes.length > 0 ? (
+                <div className='grid grid-cols-3 gap-4 mt-8'>
                 {allNotes.map((item, index) =>(
             <NoteCard
                 key={item._id}
@@ -65,12 +139,15 @@ const Home = () => {
                 content={item.content}
                 tags={item.tags}
                 isPinned={item.isPinned}
-                onEdit={() =>{}}
-                onDelete={() =>{}}
+                onEdit={() => handleEdit(item)}
+                onDelete={() =>deleteNote(item)}
                 onPinNote={() =>{}}
             />
             ))}
             </div>
+            ) : (
+                <EmptyCard message='Start creating your first note! Click the button below'/>
+            )}
         </div>
 
         <button 
@@ -97,8 +174,18 @@ const Home = () => {
             noteData={openAddEditModal.data}
             onClose={() => {
                 setOpenAddEditModal({ isShown: false, type: "add", data: null });
-            }}/>
+            }}
+            getAllNotes={getAllNotes}
+            showToastMessage={showToastMessage}
+            />
         </Modal>
+
+        <Toast
+            isShown={showToaster.isShown}
+            message={showToaster.message}
+            type={showToaster.type}
+            onClose={handleCloseToast}
+        />
     </>
   );
 };
