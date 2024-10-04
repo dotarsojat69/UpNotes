@@ -105,7 +105,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }
             <label className="input-label">CONTENT</label>
             <textarea
             type="text"
-            className='text-sm text-slate-900 outline-none bg-slate-50 p-2 rounded'
+            className='text-sm text-slate-900 outline-none bg-slate-50 p-2 rounded shadow'
             placeholder='Content'
             rows={10}
             value={content}
@@ -122,7 +122,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }
 
         {error && <p className='text-red-500 text-xs pt-4'>{error}</p>}
 
-        <button className='btn-primary font-semibold mt-5 p-3'
+        <button className='btn-primary font-semibold mt-5 p-3 shadow'
         onClick={handleAddNote}>
             {type === 'edit' ? 'UPDATE' : 'ADD'}
         </button>
