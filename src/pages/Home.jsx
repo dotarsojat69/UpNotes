@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../utils/axiosInstance'
 import Toast from '../components/Toast'
 import EmptyCard from '../components/EmptyCard'
+import NoDataImg from '../assets/images/notes.svg'
+import AddNoteImg from '../assets/images/add-notes.svg'
 
 const Home = () => {
 
@@ -109,6 +111,23 @@ const Home = () => {
         }
     };
 
+    const updateIsPinned = async (noteData) => {
+        const noteId = noteData._id
+
+        try {
+            const response = await axiosInstance.put("/update-note-pinned/" + noteId, {
+                isPinned: !noteData.isPinned,
+            });
+
+            if (response.data && response.data.note) {
+                showToastMessage("Note Updated Successfully");
+                getAllNotes();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const handleClearSearch = () => {
         setIsSearch(false);
         getAllNotes();
@@ -141,12 +160,15 @@ const Home = () => {
                 isPinned={item.isPinned}
                 onEdit={() => handleEdit(item)}
                 onDelete={() =>deleteNote(item)}
-                onPinNote={() =>{}}
+                onPinNote={() => updateIsPinned(item)}
             />
             ))}
             </div>
             ) : (
-                <EmptyCard message='Start creating your first note! Click the button below'/>
+                <EmptyCard 
+                imgSrc={isSearch ? NoDataImg : AddNoteImg}
+                message={isSearch ? `Oops! No notes found matching` : `Start creating your first note! Click the button below`}
+                />
             )}
         </div>
 
@@ -167,7 +189,7 @@ const Home = () => {
                 },
             }}
             contenLabel=""
-            className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
+            className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 shadow"
         >
         <AddEditNotes
             type={openAddEditModal.type}
