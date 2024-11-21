@@ -45,7 +45,7 @@ const Register = () => {
 
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-        navigate("/dashboard");
+        navigate("/home");
       }
     } catch (error) {
       if (
