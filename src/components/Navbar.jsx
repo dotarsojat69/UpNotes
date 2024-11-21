@@ -1,21 +1,21 @@
-import React, { useState } from 'react'
-import ProfileInfo from './ProfileInfo'
-import { useNavigate } from 'react-router-dom';
-import SearchBar from './SearchBar';
+/* eslint-disable react/prop-types */
+import { useState } from "react";
+import ProfileInfo from "./ProfileInfo";
+import { useNavigate } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
 const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
-
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const onLogout = () => {
-    localStorage.clear()
+    localStorage.clear();
     navigate("/login");
   };
 
   const handleSearch = () => {
-    if(searchQuery){
-      onSearchNote(searchQuery)
+    if (searchQuery) {
+      onSearchNote(searchQuery);
     }
   };
 
@@ -25,21 +25,21 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
   };
 
   return (
-    <div className='bg-white flex items-center justify-between px-6 py-2 shadow'>
-        <h2 className='text-xl font-semibold text-black py-2'>UpNotes</h2>
+    <div className="bg-white flex items-center justify-between px-6 py-2 shadow">
+      <h2 className="text-xl font-semibold text-black py-2">UpNotes</h2>
 
-        <SearchBar 
+      <SearchBar
         value={searchQuery}
         onChange={({ target }) => {
-          setSearchQuery(target.value)
+          setSearchQuery(target.value);
         }}
         handleSearch={handleSearch}
         onClearSearch={onClearSearch}
-        />
+      />
 
-        <ProfileInfo userInfo={userInfo} onLogout={onLogout}/>
+      <ProfileInfo userInfo={userInfo} onLogout={onLogout} />
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
