@@ -8,7 +8,7 @@ const routes = (
   <Router>
     <Routes>
       {/* Rute proteksi */}
-      <Route path="/home" element={<PrivateRoute element={<Home />} />} />
+      <Route path="/" element={<PrivateRoute element={<Home />} />} />
 
       {/* Rute tanpa proteksi */}
       <Route path="/login" element={<Login />} />
